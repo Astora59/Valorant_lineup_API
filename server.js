@@ -5,7 +5,7 @@ const cors = require("cors");
 const morgan = require("morgan");
 require("dotenv").config();
 
-mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true });
+mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true, useUnifiedTopology: true });
 const db = mongoose.connection;
 db.on("error", (error) => console.error(error))
 db.once("open", () => console.log("Connected to Database"))
@@ -20,4 +20,27 @@ app.use("/lineup", lineupRouter)
 
 
 
-app.listen(3000, () => console.log("server started on port 3000"));
+const errorHandler = error => {
+    if (error.syscall !== 'listen') {
+      throw error;
+    }
+    const address = server.address();
+    const bind = typeof address === 'string' ? 'pipe ' + address : 'port: ' + port;
+    switch (error.code) {
+      case 'EACCES':
+        console.error(bind + ' requires elevated privileges.');
+        process.exit(1);
+        break;
+      case 'EADDRINUSE':
+        console.error(bind + ' is already in use.');
+        process.exit(1);
+        break;
+      default:
+        throw error;
+    }
+  };
+
+  const port = process.env.PORT || 3000;
+  
+
+app.listen(port, () => console.log("server started on port 3000"));
