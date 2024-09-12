@@ -17,6 +17,30 @@ router.get('/:id', getLineup, (req, res) => {
     res.json(res.lineup);
   });
 
+
+
+// Route pour chercher une lineup par agent
+router.get('/agent/:agentName', async (req, res) => {
+  try {
+    // Récupérer le nom de l'agent à partir des paramètres de l'URL
+    const agentName = req.params.agentName;
+    
+    // Rechercher dans la base de données les lineups avec cet agent
+    const lineups = await Lineup.find({ agent: agentName });
+    
+    // Si aucune lineup n'est trouvée, envoyer une réponse vide
+    if (lineups.length === 0) {
+      return res.status(404).json({ message: "Aucune lineup trouvée pour cet agent." });
+    }
+    
+    // Renvoyer les lineups trouvées au format JSON
+    res.json(lineups);
+  } catch (err) {
+    // Gérer les erreurs et renvoyer une réponse 500
+    res.status(500).json({ message: err.message });
+  }
+});
+
 // Route pour créer un nouveau lineup
 router.post('/', async (req, res) => {
   const lineup = new Lineup({
