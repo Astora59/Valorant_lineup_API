@@ -41,6 +41,50 @@ router.get('/agent/:agentName', async (req, res) => {
   }
 });
 
+router.get('/map/:mapName', async (req, res) => {
+  try {
+    // Récupérer le nom de la map à partir des paramètres de l'URL
+    const mapName = req.params.mapName;
+    
+    // Rechercher dans la base de données les lineups avec cet agent
+    const lineups = await Lineup.find({ map: mapName });
+    
+    // Si aucune lineup n'est trouvée, envoyer une réponse vide
+    if (lineups.length === 0) {
+      return res.status(404).json({ message: "Aucune lineup trouvée pour cette map." });
+    }
+    
+    // Renvoyer les lineups trouvées au format JSON
+    res.json(lineups);
+  } catch (err) {
+    // Gérer les erreurs et renvoyer une réponse 500
+    res.status(500).json({ message: err.message });
+  }
+});
+
+router.get('/lineups/:agentName/:mapName', async (req, res) => {
+  try {
+    // Récupérer les paramètres de l'URL
+    const { agentName, mapName } = req.params;
+    
+    // Rechercher dans la base de données les lineups avec l'agent et la map spécifiés
+    const lineups = await Lineup.find({ agent: agentName, map: mapName });
+    
+    // Si aucune lineup n'est trouvée, renvoyer une réponse 404
+    if (lineups.length === 0) {
+      return res.status(404).json({ message: `Aucune lineup trouvée pour l'agent ${agentName} sur la map ${mapName}.` });
+    }
+    
+    // Renvoyer les lineups trouvées au format JSON
+    res.json(lineups);
+  } catch (err) {
+    // Gérer les erreurs et renvoyer une réponse 500
+    res.status(500).json({ message: err.message });
+  }
+});
+
+
+
 // Route pour créer un nouveau lineup
 router.post('/', async (req, res) => {
   const lineup = new Lineup({
