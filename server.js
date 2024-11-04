@@ -15,6 +15,13 @@ app.use(express.json());
 app.use(cors());
 app.use(morgan("dev"));
 
+const corsOptions = {
+  origin: ['https://valorant-lineup-api.onrender.com', 'http://localhost:3000'],
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
+
 const lineupRouter = require("./routes/lineup"); 
 app.use("/lineup", lineupRouter)
 
